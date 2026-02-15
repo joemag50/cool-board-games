@@ -1,0 +1,55 @@
+---
+description: Contexto general del proyecto Cool Board Games — arquitectura, convenciones y cómo agregar juegos nuevos
+alwaysApply: true
+---
+
+# Cool Board Games — Contexto del proyecto
+
+Plataforma web de juegos de mesa/casino solitarios o contra IA local. Está pensada para ir creciendo con más juegos.
+
+## Stack
+
+- **Vite + React + TypeScript** (SPA, sin backend ni SSR)
+- **Tailwind CSS v4** (via `@tailwindcss/vite`)
+- Sin react-router: la navegación es por estado (`currentGameId` en `App.tsx`)
+
+## Estructura
+
+```
+src/
+├── types/index.ts           # Card, Suit, Rank, GameModule, helpers (createStandardDeck, shuffle, etc.)
+├── components/              # Componentes reutilizables
+│   ├── PlayingCard.tsx      # Carta con tamaños sm/md/lg y aspect-ratio 5:7
+│   └── Dice.tsx             # Dado CSS con puntos posicionados
+├── games/
+│   ├── registry.ts          # Array GAMES: GameModule[] — registro central
+│   ├── blackjack/           # Hook useBlackjack + BlackjackGame
+│   ├── spider/              # Hook useSpider + SpiderGame (1-suit, 104 cartas)
+│   └── yahtzee/             # Hook useYahtzee + YahtzeeGame (13 categorías)
+├── App.tsx                  # Lobby (grid de juegos) + header con navegación
+├── main.tsx
+└── index.css                # Tailwind import + colores custom (felt, card-back) + animaciones
+```
+
+## Convenciones
+
+- Cada juego vive en `src/games/<nombre>/` con: `use<Nombre>.ts` (hook con lógica), `<Nombre>Game.tsx` (UI), `index.ts` (re-export)
+- La lógica del juego va en un custom hook (`useBlackjack`, `useSpider`, `useYahtzee`)
+- Los tipos compartidos van en `src/types/index.ts`
+- Los imports de tipos usan `import type { ... }` (verbatimModuleSyntax habilitado)
+- UI en español (mensajes, labels, categorías)
+- Tema oscuro con fondos tipo casino (verde felt para cartas, slate/indigo para dados)
+
+## Agregar un juego nuevo
+
+1. Crear carpeta `src/games/<id>/`
+2. Crear `use<Nombre>.ts` con la lógica del juego
+3. Crear `<Nombre>Game.tsx` con la UI
+4. Crear `index.ts` que re-exporte el componente
+5. Agregar entrada en `src/games/registry.ts` al array `GAMES` con: id, name, description, icon, gradient, component
+
+## Juegos actuales
+
+- **Blackjack**: apuestas (10-250), hit/stand/double, dealer AI con delay, 6 barajas
+- **Spider Solitario**: 1 suit (espadas), 10 columnas, click-to-select-and-move, detección de secuencias K→A
+- **Yahtzee**: 5 dados, hold/release, 3 tiros por turno, 13 categorías, bono upper section ≥63

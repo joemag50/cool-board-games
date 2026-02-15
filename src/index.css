@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@theme {
+  --color-felt: #0d5c2e;
+  --color-felt-dark: #094a24;
+  --color-felt-light: #0f6e36;
+  --color-card-back: #1a3a5c;
+  --color-card-back-light: #2a5a8c;
+}
+
+html, body, #root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  background-color: #0f172a;
+  color: white;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Card: deal from shoe (slides from top-right) ── */
+@keyframes deal-from-shoe {
+  0% {
+    opacity: 0;
+    transform: translateX(280px) translateY(-80px) rotate(12deg) scale(0.4);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(40px) translateY(-10px) rotate(3deg) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+  }
+}
+.animate-deal-from-shoe {
+  animation: deal-from-shoe 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* ── Card: generic deal (fade + drop) ── */
+@keyframes deal {
+  from { opacity: 0; transform: translateY(-20px) scale(0.8); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-deal {
+  animation: deal 0.3s ease-out;
+}
+
+/* ── Card: flip reveal ── */
+@keyframes card-flip {
+  0% { transform: scaleX(0.05); opacity: 0.4; }
+  50% { transform: scaleX(0.02); opacity: 0.2; }
+  60% { transform: scaleX(0.3); opacity: 0.7; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+.animate-card-flip {
+  animation: card-flip 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ── Shuffle: riffle effect ── */
+@keyframes shuffle-riffle-1 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-18px, -4px) rotate(-6deg); }
+  40% { transform: translate(2px, 0) rotate(0deg); }
+  60% { transform: translate(18px, -4px) rotate(6deg); }
+  80% { transform: translate(-2px, 0) rotate(0deg); }
+}
+@keyframes shuffle-riffle-2 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(18px, -4px) rotate(6deg); }
+  40% { transform: translate(-2px, 0) rotate(0deg); }
+  60% { transform: translate(-18px, -4px) rotate(-6deg); }
+  80% { transform: translate(2px, 0) rotate(0deg); }
+}
+@keyframes shuffle-riffle-3 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-10px, -8px) rotate(-4deg); }
+  35% { transform: translate(10px, -2px) rotate(3deg); }
+  55% { transform: translate(-8px, -6px) rotate(-3deg); }
+  75% { transform: translate(6px, -1px) rotate(2deg); }
+}
+.animate-shuffle-1 { animation: shuffle-riffle-1 0.8s ease-in-out infinite; }
+.animate-shuffle-2 { animation: shuffle-riffle-2 0.8s ease-in-out infinite; }
+.animate-shuffle-3 { animation: shuffle-riffle-3 0.8s ease-in-out infinite; }
+
+/* ── Cut: slide effect ── */
+@keyframes cut-slide {
+  0% { transform: translateX(0); }
+  40% { transform: translateX(40px); }
+  70% { transform: translateX(40px) translateY(-20px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+.animate-cut {
+  animation: cut-slide 0.6s ease-in-out;
+}
+
+/* ── Dice roll animation ── */
+@keyframes roll {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(0.9); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  75% { transform: rotate(270deg) scale(0.9); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.animate-roll {
+  animation: roll 0.5s ease-in-out;
+}
+
+/* ── Pulse glow for results ── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px 2px rgba(251, 191, 36, 0.3); }
+  50% { box-shadow: 0 0 20px 6px rgba(251, 191, 36, 0.6); }
+}
+.animate-glow {
+  animation: glow-pulse 1.5s ease-in-out infinite;
+}
