@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# Cool Board Games
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Coleccion de juegos de mesa clasicos para jugar en el navegador, construido con React, TypeScript, Vite y Tailwind CSS.
 
-Currently, two official plugins are available:
+## Juegos disponibles
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Juego | Descripcion |
+|-------|-------------|
+| Blackjack | Vence al dealer llegando a 21 sin pasarte |
+| Spider Solitario | Ordena las cartas de K a A en secuencias completas |
+| Yahtzee | Lanza los dados y busca las mejores combinaciones |
 
-## React Compiler
+## Requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [Node.js](https://nodejs.org/) v18 o superior
+- npm (incluido con Node.js)
 
-## Expanding the ESLint configuration
+## Inicio rapido
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Instalar dependencias
+npm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Iniciar el servidor de desarrollo
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+La app se abre en [http://localhost:5173](http://localhost:5173).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Scripts disponibles
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Comando | Descripcion |
+|---------|-------------|
+| `npm run dev` | Inicia el servidor de desarrollo con hot reload |
+| `npm run build` | Compila TypeScript y genera el build de produccion |
+| `npm run preview` | Sirve el build de produccion localmente |
+| `npm run lint` | Ejecuta ESLint sobre el proyecto |
+
+## Estructura del proyecto
+
 ```
+src/
+  App.tsx              # Componente principal con lobby y navegacion
+  main.tsx             # Entry point
+  components/          # Componentes compartidos (PlayingCard, Dice)
+  games/
+    registry.ts        # Registro central de juegos
+    blackjack/         # Blackjack
+    spider/            # Spider Solitario
+    yahtzee/           # Yahtzee
+  types/               # Tipos compartidos
+```
+
+## Tech stack
+
+- [React](https://react.dev/) 19
+- [TypeScript](https://www.typescriptlang.org/) 5.9
+- [Vite](https://vite.dev/) 7
+- [Tailwind CSS](https://tailwindcss.com/) 4

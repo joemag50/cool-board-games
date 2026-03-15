@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { Card } from '../../types';
 import { RANKS, rankIndex, createSpiderDeck, shuffle } from '../../types';
 
@@ -9,25 +9,30 @@ export interface SpiderState {
   selected: { col: number; cardIndex: number } | null;
   moves: number;
   gameWon: boolean;
+  dealing: boolean;
+  dealingCards: Set<string>;
+  initialDeal: boolean;
+  initialDealCards: Set<string>;
 }
 
 function initGame(): SpiderState {
   const deck = shuffle(createSpiderDeck());
   const columns: Card[][] = Array.from({ length: 10 }, () => []);
+  const initialDealCards = new Set<string>();
 
   let idx = 0;
-  // Columns 0-3: 6 cards, columns 4-9: 5 cards
   for (let col = 0; col < 10; col++) {
     const count = col < 4 ? 6 : 5;
     for (let i = 0; i < count; i++) {
       const card = { ...deck[idx] };
-      card.faceUp = i === count - 1; // Only top card face-up
+      card.faceUp = i === count - 1;
       columns[col].push(card);
+      initialDealCards.add(card.id);
       idx++;
     }
   }
 
-  const stock = deck.slice(idx); // 50 cards remaining
+  const stock = deck.slice(idx);
 
   return {
     columns,
@@ -36,6 +41,10 @@ function initGame(): SpiderState {
     selected: null,
     moves: 0,
     gameWon: false,
+    dealing: false,
+    dealingCards: new Set<string>(),
+    initialDeal: true,
+    initialDealCards,
   };
 }
 
@@ -113,17 +122,21 @@ export function useSpider() {
     });
   }, []);
 
+  const dealTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const initialTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
   const dealFromStock = useCallback(() => {
     setState(prev => {
       if (prev.stock.length === 0) return prev;
 
-      // All columns must have at least 1 card
       if (prev.columns.some(col => col.length === 0)) {
         return { ...prev, selected: null };
       }
 
+      const dealingCards = new Set<string>();
       const newColumns = prev.columns.map((col, i) => {
         const card = { ...prev.stock[i], faceUp: true };
+        dealingCards.add(card.id);
         return [...col, card];
       });
 
@@ -133,17 +146,52 @@ export function useSpider() {
         columns: newColumns,
         stock: newStock,
         selected: null,
+        dealing: true,
+        dealingCards,
       };
 
-      // Check for completed sequences after deal
       newState = checkAndRemoveCompleted(newState);
 
       return newState;
     });
+
+    if (dealTimerRef.current) clearTimeout(dealTimerRef.current);
+    dealTimerRef.current = setTimeout(() => {
+      setState(prev => ({ ...prev, dealing: false, dealingCards: new Set() }));
+    }, 800);
   }, []);
 
   const newGame = useCallback(() => {
-    setState(initGame());
+    const fresh = initGame();
+    setState(fresh);
+
+    if (initialTimerRef.current) clearTimeout(initialTimerRef.current);
+    initialTimerRef.current = setTimeout(() => {
+      setState(prev => ({ ...prev, initialDeal: false, initialDealCards: new Set() }));
+    }, 2000);
+  }, []);
+
+  const canDrag = useCallback((col: number, cardIndex: number): boolean => {
+    const column = state.columns[col];
+    if (!column[cardIndex] || !column[cardIndex].faceUp) return false;
+    return isValidSequence(column, cardIndex);
+  }, [state.columns]);
+
+  const canDrop = useCallback((srcCol: number, srcIdx: number, destCol: number): boolean => {
+    const destColumn = state.columns[destCol];
+    const srcCard = state.columns[srcCol][srcIdx];
+    if (!srcCard) return false;
+    if (destColumn.length === 0) return true;
+    const destTop = destColumn[destColumn.length - 1];
+    return rankIndex(destTop.rank) - rankIndex(srcCard.rank) === 1;
+  }, [state.columns]);
+
+  const moveCards = useCallback((srcCol: number, srcIdx: number, destCol: number) => {
+    setState(prev => {
+      if (prev.gameWon) return prev;
+      if (srcCol === destCol) return prev;
+      return tryMove(prev, srcCol, srcIdx, destCol);
+    });
   }, []);
 
   return {
@@ -152,6 +200,9 @@ export function useSpider() {
     clickEmptyColumn,
     dealFromStock,
     newGame,
+    canDrag,
+    canDrop,
+    moveCards,
     stockDeals: Math.floor(state.stock.length / 10),
   };
 }
